@@ -1,6 +1,8 @@
 import pytest
+from sqlalchemy import delete
 from app.db.connection import Session
-from app.db.models import Category as CategoryModels
+from app.db.models import Category as CategoryModel
+from app.db.models import Product as ProductModel
 
 
 @pytest.fixture()
@@ -15,10 +17,10 @@ def db_session():
 @pytest.fixture()
 def categories_on_db(db_session):
     categories = [
-        CategoryModels(name='Roupa', slug='roupa'),
-        CategoryModels(name='Decoracao', slug='decoracao'),
-        CategoryModels(name='Itens de cozinha', slug='itens-de-cozinha'),
-        CategoryModels(name='Carro', slug='carro'),
+        CategoryModel(name='Roupa', slug='roupa'),
+        CategoryModel(name='Decoracao', slug='decoracao'),
+        CategoryModel(name='Itens de cozinha', slug='itens-de-cozinha'),
+        CategoryModel(name='Carro', slug='carro'),
     ]
 
     for category in categories:
@@ -32,4 +34,28 @@ def categories_on_db(db_session):
 
     for category in categories:
         db_session.delete(category)
+    db_session.commit()
+
+
+@pytest.fixture()
+def product_on_db(db_session):
+    category = CategoryModel(name='Carro', slug='carro')
+    db_session.add(category)
+    db_session.commit()
+
+    product = ProductModel(
+        name='Camisa Abidas',
+        slug='camisa-abidas',
+        price=16.89,
+        stock=2134,
+        category_id=category.id
+    )
+
+    db_session.add(product)
+    db_session.commit()
+
+    yield product
+
+    db_session.delete(product)
+    db_session.delete(category)
     db_session.commit()

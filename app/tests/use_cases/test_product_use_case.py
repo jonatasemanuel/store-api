@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 import pytest
-from sqlalchemy import delete
+
+
 from app.db.models import Product as ProductModel
 from app.schemas.product import Product
 from app.use_cases.product import ProductUseCases
@@ -43,3 +44,40 @@ def test_add_product_uc_invalid_category(db_session):
 
     with pytest.raises(HTTPException):
         uc.add_product(product=product, category_slug='Invalid')
+
+
+def test_update_product(db_session, product_on_db):
+
+    product = Product(
+        name='Camisa Mike',
+        slug='camisa-mike',
+        price=23.99,
+        stock=24
+    )
+
+    uc = ProductUseCases(db_session=db_session)
+    uc.update_product(id=product_on_db.id, product=product)
+
+    product_update_on_db = db_session.query(
+        ProductModel).filter_by(id=product_on_db.id).first()
+
+    assert product_update_on_db is not None
+    assert product_update_on_db.name == product.name
+    assert product_update_on_db.price == product.price
+    assert product_update_on_db.slug == product.slug
+    assert product_update_on_db.stock == product.stock
+
+
+def test_update_invalid_product_id(db_session, product_on_db):
+
+    product = Product(
+        name='Camisa Mike',
+        slug='camisa-mike',
+        price=23.99,
+        stock=24
+    )
+
+    uc = ProductUseCases(db_session=db_session)
+
+    with pytest.raises(HTTPException):
+        uc.update_product(id=1, product=product)
