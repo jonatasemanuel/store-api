@@ -80,6 +80,6 @@ def test_update_product_route_invalid_id():
         "stock": 10
     }
 
-    response = client.put(f'/product/update/1', json=body)
+    response = client.put('/product/update/1', json=body)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
