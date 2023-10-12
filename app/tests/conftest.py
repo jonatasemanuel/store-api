@@ -1,8 +1,7 @@
-import pytest
-from sqlalchemy import delete
-from app.db.connection import Session
-from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
+from app.db.models import Category as CategoryModel
+from app.db.connection import Session
+import pytest
 
 
 @pytest.fixture()
@@ -71,9 +70,9 @@ def products_on_db(db_session):
     products = [
         ProductModel(name='Camisa Mike', slug='camisa-mike',
                      price=100, stock=10, category_id=category.id),
-        ProductModel(name='Moletom Mike', slug='moletom-mike',
+        ProductModel(name='Moletom Mike', slug='moletom',
                      price=100, stock=10, category_id=category.id),
-        ProductModel(name='Camisa Confortavel', slug='camisa-confortavel',
+        ProductModel(name='Camisa', slug='camisa-mike',
                      price=100, stock=10, category_id=category.id),
         ProductModel(name='Calcinha', slug='calcinha', price=100,
                      stock=10, category_id=category.id),
@@ -93,3 +92,4 @@ def products_on_db(db_session):
     db_session.commit()
 
     db_session.delete(category)
+    db_session.commit()
